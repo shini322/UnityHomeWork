@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.Events;
 public class SignalingTrigger : MonoBehaviour
 {
-    private UnityEvent<bool> _playerSignalTriggered = new UnityEvent<bool>();
     private bool _isSignalingWork;
+    private UnityEvent<bool> _playerSignalTriggered = new UnityEvent<bool>();
     
     public event UnityAction<bool> PlayerSignalTriggered
     {
@@ -13,7 +13,7 @@ public class SignalingTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.TryGetComponent<Player>(out Player player))
+        if (collider.TryGetComponent<PlayerMovement>(out PlayerMovement playerMovement))
         {
             ChangeSignalingState(true);
         }
@@ -21,7 +21,7 @@ public class SignalingTrigger : MonoBehaviour
     
     private void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.TryGetComponent<Player>(out Player player))
+        if (collider.TryGetComponent<PlayerMovement>(out PlayerMovement playerMovement))
         {
             ChangeSignalingState(false);
         }
