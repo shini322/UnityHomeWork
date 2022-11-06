@@ -3,6 +3,7 @@ using UnityEngine.Events;
 public class SignalingTrigger : MonoBehaviour
 {
     private bool _isSignalingWork;
+
     private UnityEvent<bool> _playerSignalTriggered = new UnityEvent<bool>();
     
     public event UnityAction<bool> PlayerSignalTriggered

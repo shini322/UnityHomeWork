@@ -17,16 +17,16 @@ public class Signaling : MonoBehaviour
     private bool _isSignalingWork;
     private float _signalingPower;
 
+    private void OnEnable()
+    {
+        _signalingTrigger.PlayerSignalTriggered += OnChangeSignalingState;
+    }
+    
     private void Start()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _audioSource = GetComponent<AudioSource>();
         _spriteRenderer.color = _standardColor;
-    }
-
-    private void OnEnable()
-    {
-        _signalingTrigger.PlayerSignalTriggered += OnChangeSignalingState;
     }
 
     public void Update()
