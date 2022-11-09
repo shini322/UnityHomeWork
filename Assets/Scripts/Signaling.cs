@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(AudioSource))]
 public class Signaling : MonoBehaviour
 {
     [SerializeField] private SignalingTrigger _signalingTrigger;
@@ -60,7 +61,10 @@ public class Signaling : MonoBehaviour
 
     private void ChangeAudioPower()
     {
-        _audioSource.volume = _signalingPower * VolumeValueMultiply;
+        if (_signalingPower is > MinSignalingValue and < MaxSignalingValue)
+        {
+            _audioSource.volume = _signalingPower * VolumeValueMultiply;
+        }
 
         if (!_audioSource.isPlaying && _signalingPower > 0)
         {
