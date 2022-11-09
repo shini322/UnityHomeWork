@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -15,8 +16,8 @@ public class Signaling : MonoBehaviour
     private const float VolumeValueMultiply = 0.5f;
 
     private SpriteRenderer _spriteRenderer;
-    private bool _isSignalingWork;
     private float _signalingPower;
+    private Coroutine _changeSignalingPowerCoroutine;
 
     private void OnEnable()
     {
@@ -30,47 +31,30 @@ public class Signaling : MonoBehaviour
         _spriteRenderer.color = _standardColor;
     }
 
-    public void Update()
-    {
-        ChangeSignalingPower();
-        ChangeAudioPower();
-        ChangeColor();
-    }
-
     private void OnDisable()
     {
         _signalingTrigger.PlayerSignalTriggered -= OnChangeSignalingState;
+        StopAllCoroutines();
     }
 
     private void OnChangeSignalingState(bool isSignalingWork)
     {
-        _isSignalingWork = isSignalingWork;
-    }
-
-    private void ChangeSignalingPower()
-    {
-        if (_isSignalingWork && _signalingPower < MaxSignalingValue)
+        if (_changeSignalingPowerCoroutine != null)
         {
-            _signalingPower = Mathf.MoveTowards(_signalingPower, MaxSignalingValue, _speedChange * Time.deltaTime);
+            StopCoroutine(_changeSignalingPowerCoroutine);
         }
-        if(!_isSignalingWork && _signalingPower > MinSignalingValue)
-        {
-            _signalingPower = Mathf.MoveTowards(_signalingPower, MinSignalingValue, _speedChange * Time.deltaTime);
-        }
+        _changeSignalingPowerCoroutine = StartCoroutine(ChangeSignalingPower(isSignalingWork));
     }
 
     private void ChangeAudioPower()
     {
-        if (_signalingPower is > MinSignalingValue and < MaxSignalingValue)
-        {
-            _audioSource.volume = _signalingPower * VolumeValueMultiply;
-        }
-
+        _audioSource.volume = _signalingPower * VolumeValueMultiply;
+    
         if (!_audioSource.isPlaying && _signalingPower > 0)
         {
             _audioSource.Play();
         }
-
+    
         if (_audioSource.isPlaying && _signalingPower <= 0)
         {
             _audioSource.Stop();
@@ -80,5 +64,17 @@ public class Signaling : MonoBehaviour
     private void ChangeColor()
     {
         _spriteRenderer.color = Color.Lerp(_standardColor, _signalingColor, _signalingPower);
+    }
+
+    private IEnumerator ChangeSignalingPower(bool isSignalingWork)
+    {
+        for (float i = MinSignalingValue; i <= MaxSignalingValue; i+= _speedChange * Time.deltaTime)
+        {
+            float moveTowardsTarget = isSignalingWork ? MaxSignalingValue : MinSignalingValue;
+            _signalingPower = Mathf.MoveTowards(_signalingPower, moveTowardsTarget, _speedChange * Time.deltaTime);
+            ChangeAudioPower();
+            ChangeColor();
+            yield return null;
+        }
     }
 }
