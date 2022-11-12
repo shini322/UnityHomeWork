@@ -43,7 +43,9 @@ public class Signaling : MonoBehaviour
         {
             StopCoroutine(_changeSignalingPowerCoroutine);
         }
-        _changeSignalingPowerCoroutine = StartCoroutine(ChangeSignalingPower(isSignalingWork));
+
+        float moveTowardsTarget = isSignalingWork ? MaxSignalingValue : MinSignalingValue;
+        _changeSignalingPowerCoroutine = StartCoroutine(ChangeSignalingPower(moveTowardsTarget));
     }
 
     private void ChangeAudioPower()
@@ -66,12 +68,11 @@ public class Signaling : MonoBehaviour
         _spriteRenderer.color = Color.Lerp(_standardColor, _signalingColor, _signalingPower);
     }
 
-    private IEnumerator ChangeSignalingPower(bool isSignalingWork)
+    private IEnumerator ChangeSignalingPower(float target)
     {
-        for (float i = MinSignalingValue; i <= MaxSignalingValue; i+= _speedChange * Time.deltaTime)
+        while (_signalingPower != target)
         {
-            float moveTowardsTarget = isSignalingWork ? MaxSignalingValue : MinSignalingValue;
-            _signalingPower = Mathf.MoveTowards(_signalingPower, moveTowardsTarget, _speedChange * Time.deltaTime);
+            _signalingPower = Mathf.MoveTowards(_signalingPower, target, _speedChange * Time.deltaTime);
             ChangeAudioPower();
             ChangeColor();
             yield return null;
