@@ -4,9 +4,9 @@ public class Coin : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.TryGetComponent<PlayerController>(out PlayerController playerController))
+        if (collider.TryGetComponent<CoinsManage>(out CoinsManage coinsManage))
         {
-            playerController.AddCoins(1);
+            coinsManage.AddCoins(1);
             Destroy(gameObject);
         }
     }
