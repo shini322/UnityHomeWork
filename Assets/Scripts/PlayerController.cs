@@ -9,6 +9,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private Animator _animator;
 
+    private const string HorizontalAxisRawKey = "Horizontal";
+    private const string IsMovingAnimationKey = "isMoving";
+    private const string IsJumpingAnimationKey = "isJumping";
+    private const float LineCastOffSet = 0.01f;
+
     private Rigidbody2D _rigidbody2D;
     private BoxCollider2D _collider2D;
     private bool _isFacingRight = true;
@@ -17,8 +22,8 @@ public class PlayerController : MonoBehaviour
     {
         get
         {
-            Vector3 start = new Vector3(_collider2D.bounds.min.x, _collider2D.bounds.min.y - 0.01f);
-            Vector3 end = new Vector3(_collider2D.bounds.max.x, _collider2D.bounds.min.y - 0.01f);
+            Vector3 start = new Vector3(_collider2D.bounds.min.x, _collider2D.bounds.min.y - LineCastOffSet);
+            Vector3 end = new Vector3(_collider2D.bounds.max.x, _collider2D.bounds.min.y - LineCastOffSet);
             RaycastHit2D hit = Physics2D.Linecast(start, end, _groundLayerMask);
             return hit.collider != null;
         }
@@ -38,9 +43,9 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
+        float horizontal = Input.GetAxisRaw(HorizontalAxisRawKey);
         _rigidbody2D.velocity = new Vector2(horizontal * _speed, _rigidbody2D.velocity.y);
-        _animator.SetBool("isMoving", horizontal != 0);
+        _animator.SetBool(IsMovingAnimationKey, horizontal != 0);
             
         if (_isFacingRight && horizontal < 0 || !_isFacingRight && horizontal > 0)
         {
@@ -53,10 +58,10 @@ public class PlayerController : MonoBehaviour
         if (Input.GetAxis("Jump") > 0 && _isGrounded)
         {
             _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _jumpForce);
-            _animator.SetBool("isJumping", true);
+            _animator.SetBool(IsJumpingAnimationKey, true);
         }
 
-        _animator.SetBool("isJumping", !_isGrounded);
+        _animator.SetBool(IsJumpingAnimationKey, !_isGrounded);
     }
 
     private void Flip()

@@ -7,6 +7,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float _waitSeconds;
     [SerializeField] private Transform[] _wayPoints;
 
+    private const float MinTargetDistance = 0.001f;
+    
     private Coroutine _patrolCoroutine;
 
     private void Start()
@@ -21,13 +23,15 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator PatrolMovement(Vector3 targetPosition)
     {
-        while (Vector3.Distance(transform.position, targetPosition) > 0.001f)
+        WaitForSeconds _waitForSeconds = new WaitForSeconds(_waitSeconds);
+
+        while (Vector3.Distance(transform.position, targetPosition) > MinTargetDistance)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, _speed * Time.deltaTime);
             yield return null;
         }
-        
-        yield return new WaitForSeconds(_waitSeconds);
+
+        yield return _waitForSeconds;
     }
 
     private IEnumerator PatrolChangeWayPont()
