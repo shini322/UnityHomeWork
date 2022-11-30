@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Slider))]
 public class PlayerHealthView : MonoBehaviour
 {
     [SerializeField] private PlayerHealthController _playerHealthController;
@@ -17,22 +18,28 @@ public class PlayerHealthView : MonoBehaviour
         _slider.maxValue = _playerHealthController.MaxHealth;
     }
 
+    private void OnDestroy()
+    {
+        _playerHealthController.HealthWasChanged -= StartChangeHealth;
+    }
+
     private IEnumerator ChangeHealth(float health)
     {
-        if (_changeHealthCoroutine != null)
-        {
-            StopCoroutine(_changeHealthCoroutine);
-        }
-        
         while (_slider.value != health)
         {
-            _slider.value = Mathf.MoveTowards(_slider.value, health, _speedChange);
+            Debug.Log(_speedChange * Time.deltaTime);
+            _slider.value = Mathf.MoveTowards(_slider.value, health, _speedChange * Time.deltaTime);
             yield return null;
         }
     }
 
     private void StartChangeHealth(float health)
     {
+        if (_changeHealthCoroutine != null)
+        {
+            StopCoroutine(_changeHealthCoroutine);
+        }
+
         _changeHealthCoroutine = StartCoroutine(ChangeHealth(health));
     }
 }

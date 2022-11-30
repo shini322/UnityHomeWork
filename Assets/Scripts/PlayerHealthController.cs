@@ -22,7 +22,7 @@ public class PlayerHealthController : MonoBehaviour
         Health = MaxHealth;
     }
 
-    public void GetDamage(DamageController damageController)
+    public void MakeDamage(DamageController damageController)
     {
         if (isDead)
         {
@@ -40,7 +40,7 @@ public class PlayerHealthController : MonoBehaviour
         _healthWasChanged.Invoke(Health);
     }
 
-    public void GetHeal(HealController healController)
+    public void MakeHeal(HealController healController)
     {
         if (isDead)
         {
